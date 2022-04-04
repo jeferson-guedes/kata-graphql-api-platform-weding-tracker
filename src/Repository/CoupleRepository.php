@@ -27,6 +27,10 @@ class CoupleRepository extends ServiceEntityRepository
      */
     public function add(Couple $entity, bool $flush = true): void
     {
+        print_r(
+             'test'
+        );die;
+
         $this->_em->persist($entity);
         if ($flush) {
             $this->_em->flush();

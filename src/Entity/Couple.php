@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use DateTimeInterface;
+use JetBrains\PhpStorm\Pure;
 
 #[ORM\Entity(repositoryClass: CoupleRepository::class)]
 #[ApiResource]
@@ -30,10 +31,15 @@ class Couple
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTimeInterface $updatedAt;
 
+    #[ORM\OneToMany(mappedBy: 'couple', targetEntity: Event::class)]
+    private Collection $events;
+
+    #[Pure]
     public function __construct()
     {
-
+        $this->events = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
@@ -84,6 +90,31 @@ class Couple
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addCouple(Event $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events[] = $event;
+            $event->setCouple($this);
+        }
+        return $this;
+    }
+
+    public function removeName(Event $event): self
+    {
+        if ($this->events->removeElement($event)) {
+            if ($event->getCouple() === $this) {
+                $event->setCouple(null);
+            }
+        }
 
         return $this;
     }

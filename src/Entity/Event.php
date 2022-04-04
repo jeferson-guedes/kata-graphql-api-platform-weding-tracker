@@ -5,8 +5,6 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\EventRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
@@ -31,14 +29,9 @@ class Event
     private ?float $real_price;
 
     #[ORM\ManyToOne(targetEntity: Couple::class)]
-    #[ORM\JoinColumn(name: "couple_id", referencedColumnName: "id")]
+    #[ORM\JoinColumn(name: "couple_id", referencedColumnName: "id", nullable: true)]
     #[ApiSubresource]
-    private ArrayCollection $couples;
-
-    public function __construct()
-    {
-        $this->couples = new ArrayCollection();
-    }
+    private ?Couple $couple;
 
     public function getId(): ?int
     {
@@ -93,33 +86,15 @@ class Event
         return $this;
     }
 
-    /**
-     * @return Collection<int, Couple>
-     */
-    public function getCouples(): Collection
+    public function getCouple(): ?Couple
     {
-        return $this->couples;
+        return $this->couple;
     }
 
-    public function addCouple(Couple $couple): self
+    public function setCouple(?Couple $couple): Event
     {
-        if (!$this->couples->contains($couple)) {
-            $this->couples[] = $couple;
-//            $event->setCouple($this);
-        }
+        $this->couple = $couple;
         return $this;
     }
 
-    public function removeName(Couple $couple): self
-    {
-        $this->couples->removeElement($couple);
-//        if ($this->couples->removeElement($couple)) {
-//            // set the owning side to null (unless already changed)
-//            if ($couple->getCouple() === $this) {
-//                $event->setCouple(null);
-//            }
-//        }u
-
-        return $this;
-    }
 }
